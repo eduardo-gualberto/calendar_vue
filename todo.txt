@@ -1,0 +1,4 @@
+1. Componentizar as Tiles
+    1.1 Cade tile terá um modal de edição próprio
+    1.2 Deletar com base em event child -> parent (estudar sobre $refs com vue)
+2. Deixar um modal para adição de novas Tiles no componente CalendarUnit
