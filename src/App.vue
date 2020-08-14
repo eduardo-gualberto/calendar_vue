@@ -9,10 +9,11 @@ import { Component, Vue } from "vue-property-decorator";
 import Calendar from "./components/Calendar.vue";
 import CalendarUnit from "./components/CalendarUnit.vue";
 import CalendarTile from "./components/CalendarTile.vue";
+import Modal from "./components/Modal.vue";
 import { BModal, VBModal, BButton } from "bootstrap-vue";
 
 @Component({
-  components: { Calendar, CalendarUnit, BModal, BButton, CalendarTile },
+  components: { Calendar, CalendarUnit, BModal, BButton, CalendarTile, Modal },
 })
 export default class App extends Vue {}
 </script>

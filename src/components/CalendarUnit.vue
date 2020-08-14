@@ -2,7 +2,7 @@
   <div id="root">
     <div id="title">
       <p>{{ info.day }}</p>
-      <button id="add-btn" @click="openModal()">
+      <button id="add-btn" @click="openModal">
         <span class="material-icons md-50 white">
           add_circle_outline
         </span>
@@ -10,59 +10,16 @@
     </div>
     <div id="body">
       <CalendarTile
+        :ref="`tile${tile.id}`"
         v-for="tile in this.info.tiles"
         :key="tile.id"
         class="tile"
         :tile="tile"
+        :parentId="info.id"
+        @editModal="passOn"
         @deleteTile="deleteTile"
       ></CalendarTile>
     </div>
-    <b-modal
-      :id="`unit${info.id}`"
-      centered
-      size="lg"
-      static
-      lazy
-      @hide="modalHideHandler"
-      @ok="addTile"
-      button-size="lg"
-    >
-      <template v-slot:modal-title>
-        <h2>Adicionar 'todo' em {{ info.day }}</h2>
-      </template>
-      <div class="modal-body">
-        <label for="modal-input">Qual o novo 'todo'?</label>
-        <b-form-input
-          autofocus
-          ref="inputModal"
-          id="modal-input"
-          name="modal-input"
-          v-model="inputModel"
-          placeholder="input no body do modal"
-        />
-
-        <label for="" style="margin-top: 20px;"
-          >Qual a cor do novo 'todo'?</label
-        >
-        <b-button-group class="btn-group" size="sm">
-          <b-button
-            style="background-color: #228f07;"
-            @click="selectColor('#228f07')"
-            >Verde</b-button
-          >
-          <b-button
-            style="background-color: #cdb30c;"
-            @click="selectColor('#cdb30c')"
-            >Amarelo</b-button
-          >
-          <b-button
-            style="background-color: #b0070f;"
-            @click="selectColor('#b0070f')"
-            >Vermelho</b-button
-          >
-        </b-button-group>
-      </div>
-    </b-modal>
   </div>
 </template>
 
@@ -100,32 +57,17 @@ export default class CalendarUnit extends Vue {
     inputModal: HTMLInputElement;
   };
 
+  passOn(e: CalendarUnitTileT) {
+    const data: CalendarUnitTileT = { todo: e.todo, color: e.color, id: e.id };
+    this.$emit("editModal", data);
+  }
+
   openModal(): void {
-    this.$bvModal.show(`unit${this.info.id}`);
+    this.$emit("addModal", this.info.id);
   }
 
-  selectColor(color: string): void {
-    this.selectedColor.touched = true;
-    this.selectedColor.color = color;
-  }
-
-  modalHideHandler(): void {
-    this.selectedColor.touched = false;
-    this.selectedColor.color = "green";
-    this.inputModel = "";
-  }
-
-  addTile(e: BvModalEvent) {
-    if (this.inputModel == "") {
-      e.preventDefault();
-      return;
-    }
-    const newT: CalendarUnitTileT = {
-      todo: `${this.inputModel}`,
-      color: this.selectedColor.color,
-      id: this.idCount++,
-    };
-    this.info.tiles.push(newT);
+  addTile(tileInfo: CalendarUnitTileT) {
+    this.info.tiles.push(tileInfo);
   }
 
   deleteTile(tileId: number) {

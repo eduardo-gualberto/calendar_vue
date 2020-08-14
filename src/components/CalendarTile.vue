@@ -13,52 +13,6 @@
         </span>
       </b-button>
     </div>
-    <b-modal
-      :id="`tile${tile.id}`"
-      @hide="modalHideHandler"
-      @ok="editTile"
-      centered
-      size="lg"
-      static
-      lazy
-      button-size="lg"
-    >
-      <template v-slot:modal-title>
-        <h2>Editar '{{ tile.todo }}'</h2>
-      </template>
-      <div class="modal-body">
-        <label for="modal-input">Qual o novo 'todo'?</label>
-        <b-form-input
-          autofocus
-          ref="inputModal"
-          id="modal-input"
-          name="modal-input"
-          v-model="inputModel"
-          placeholder="input no body do modal"
-        />
-
-        <label for="" style="margin-top: 20px;"
-          >Qual a cor do novo 'todo'?</label
-        >
-        <b-button-group class="btn-group">
-          <b-button
-            style="background-color: #228f07;"
-            @click="selectColor('#228f07')"
-            >Verde</b-button
-          >
-          <b-button
-            style="background-color: #cdb30c;"
-            @click="selectColor('#cdb30c')"
-            >Amarelo</b-button
-          >
-          <b-button
-            style="background-color: #b0070f;"
-            @click="selectColor('#b0070f')"
-            >Vermelho</b-button
-          >
-        </b-button-group>
-      </div>
-    </b-modal>
   </div>
 </template>
 
@@ -80,37 +34,18 @@ import CalendarTileT from "../models/CalendarTile";
 })
 export default class CalendarTile extends Vue {
   @Prop() tile!: CalendarTileT;
-
-  inputModel = new String("");
-  selectedColor = {
-    color: "green",
-    touched: false,
-  };
+  @Prop() parentId!: number;
 
   openModal(): void {
-    this.$bvModal.show(`tile${this.tile.id}`);
-    this.inputModel = this.tile.todo;
+    this.$emit("editModal", this.tile);
   }
 
-  selectColor(color: string): void {
-    this.selectedColor.touched = true;
-    this.selectedColor.color = color;
+  editTile(edited: CalendarTileT): void {
+    this.tile.color = edited.color;
+    this.tile.todo = edited.todo;
   }
 
-  modalHideHandler(): void {
-    this.selectedColor.touched = false;
-    this.selectedColor.color = "green";
-    this.inputModel = "";
-  }
-
-  editTile(e: BvModalEvent) {
-    this.tile.todo = `${this.inputModel}`;
-    this.tile.color = this.selectedColor.touched
-      ? this.selectedColor.color
-      : this.tile.color;
-  }
-
-  deleteTile(): void {
+  deleteTile() {
     this.$emit("deleteTile", this.tile.id);
   }
 }
@@ -124,14 +59,6 @@ export default class CalendarTile extends Vue {
 
 #root > p {
   font-size: 30px;
-}
-
-.btn-group {
-  width: 100%;
-}
-
-.btn-group > button {
-  font-size: 3vh;
 }
 
 .tile-opt {
